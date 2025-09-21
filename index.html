@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noah's Daily Checklist</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/tone@14.7.58/build/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -177,7 +178,10 @@
 <body class="bg-gray-100">
 
 <div class="container mx-auto">
-    <h1 class="text-4xl sm:text-5xl font-bold text-center mb-8 text-orange-500">Noah's Daily Adventure Checklist!</h1>
+    <div class="flex justify-center mb-6">
+        <img class="w-32 h-32 rounded-full border-4 border-orange-500 shadow-lg object-cover" src="https://raw.githubusercontent.com/noahchan5/noah/main/photo_2025-09-21%2014.17.22.jpeg" alt="Noah's Avatar">
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-bold text-center mb-8 text-orange-500">Noah's Daily Checklist!</h1>
 
     <div class="mb-8">
         <div class="section-title">Morning Missions ☀️</div>
@@ -216,6 +220,18 @@
         const morningList = document.getElementById('morning-tasks');
         const eveningList = document.getElementById('evening-tasks');
 
+        function playCompletionSound() {
+            // A simple, cheerful melody using Tone.js
+            const synth = new Tone.Synth().toDestination();
+            const now = Tone.now();
+            
+            // Play a C Major arpeggio
+            synth.triggerAttackRelease("C4", "8n", now);
+            synth.triggerAttackRelease("E4", "8n", now + 0.2);
+            synth.triggerAttackRelease("G4", "8n", now + 0.4);
+            synth.triggerAttackRelease("C5", "4n", now + 0.6);
+        }
+
         function createTaskElement(task) {
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-item rounded-3xl';
@@ -231,7 +247,18 @@
                 <div class="checkmark-icon">✔️</div>
             `;
             taskDiv.addEventListener('click', () => {
+                // First, check if the task is already completed
+                const isCompleted = taskDiv.classList.contains('completed');
                 taskDiv.classList.toggle('completed');
+
+                // Play sound only when marking as completed (not un-checking)
+                if (!isCompleted) {
+                    // Start the audio context and play the sound
+                    Tone.start().then(() => {
+                        playCompletionSound();
+                    });
+                }
+                
                 checkCompletion();
             });
             return taskDiv;
